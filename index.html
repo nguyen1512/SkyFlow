@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyFlow - Quản lý công việc cá nhân</title>
+  <style>
+    :root {
+      --bg-1: #eef7ff;
+      --bg-2: #f7fbff;
+      --glass: rgba(255, 255, 255, 0.76);
+      --glass-strong: rgba(255, 255, 255, 0.9);
+      --line: rgba(91, 120, 150, 0.14);
+      --line-strong: rgba(91, 120, 150, 0.22);
+
+      --sky-1: #dff2ff;
+      --sky-2: #b8e2ff;
+      --sky-3: #7dc8ff;
+      --sky-4: #4aa6f5;
+      --sky-5: #1976d2;
+      --sky-6: #0f4c81;
+
+      --accent: #7dd3fc;
+      --accent-2: #38bdf8;
+      --amber: #f6c35f;
+      --amber-2: #f59e0b;
+      --green: #22c55e;
+      --red: #ef4444;
+      --purple: #8b5cf6;
+
+      --text: #17324e;
+      --muted: #64809d;
+      --white: #fff;
+
+      --shadow-lg: 0 20px 60px rgba(17, 66, 117, 0.12);
+      --shadow-md: 0 10px 30px rgba(17, 66, 117, 0.08);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-pill: 999px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.95), rgba(255,255,255,0) 28%),
+        radial-gradient(circle at top right, rgba(125, 211, 252, 0.18), rgba(255,255,255,0) 22%),
+        linear-gradient(180deg, #dff1ff 0%, #eef7ff 35%, #f9fcff 100%);
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .hero {
+      flex: 1;
+      min-height: 132px;
+      border: 1px solid rgba(255,255,255,0.72);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.46)),
+        linear-gradient(135deg, rgba(125,211,252,0.14), rgba(56,189,248,0.06));
+      backdrop-filter: blur(16px);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      padding: 24px 26px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      right: -30px;
+      top: -20px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(125,211,252,0.36), rgba(125,211,252,0));
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: 0.2px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+
+    .today-box {
+      width: 280px;
+      min-height: 132px;
+      border-radius: var(--radius-xl);
+      padding: 18px 20px;
+      background:
+        linear-gradient(160deg, rgba(25,118,210,0.96), rgba(15,76,129,0.95));
+      color: var(--white);
+      box-shadow: 0 18px 40px rgba(25, 118, 210, 0.22);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .today-box::before,
+    .today-box::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.09);
+    }
+
+    .today-box::before {
+      width: 140px;
+      height: 140px;
+      right: -30px;
+      top: -24px;
+    }
+
+    .today-box::after {
+      width: 90px;
+      height: 90px;
+      left: -18px;
+      bottom: -22px;
+    }
+
+    .today-box .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      opacity: 0.86;
+      position: relative;
+      z-index: 1;
+    }
+
+    .today-box .value {
+      font-size: 22px;
+      font-weight: 800;
+      margin-top: 7px;
+      position: relative;
+      z-index: 1;
+      line-height: 1.35;
+    }
+
+    .today-box .sub {
+      margin-top: 8px;
+      font-size: 13px;
+      opacity: 0.88;
+      position: relative;
+      z-index: 1;
+    }
+
+    .nav {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      border: none;
+      padding: 12px 18px;
+      border-radius: var(--radius-pill);
+      background: rgba(255,255,255,0.8);
+      color: var(--sky-6);
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      transition: 0.22s ease;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(17, 66, 117, 0.12);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--sky-4), var(--sky-5));
+      color: white;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: 1.15fr 1fr 1fr;
+    }
+
+    .grid-2 {
+      grid-template-columns: 1.15fr 0.85fr;
+    }
+
+    .card {
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,0.72);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 18px;
+      backdrop-filter: blur(16px);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: 0.1px;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .stat-card {
+      min-height: 146px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.72)),
+        linear-gradient(135deg, rgba(125,211,252,0.12), rgba(56,189,248,0.05));
+    }
+
+    .stat-card::after {
+      content: "";
+      position: absolute;
+      right: -20px;
+      top: -20px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(125,211,252,0.26), rgba(125,211,252,0));
+    }
+
+    .stat-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--sky-6);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 800;
+      background: rgba(25,118,210,0.08);
+      color: var(--sky-5);
+    }
+
+    .badge.success {
+      background: rgba(34,197,94,0.12);
+      color: #159447;
+    }
+
+    .badge.warn {
+      background: rgba(245,158,11,0.14);
+      color: #c67c00;
+    }
+
+    .ring {
+      width: 66px;
+      height: 66px;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .ring svg {
+      width: 66px;
+      height: 66px;
+      transform: rotate(-90deg);
+    }
+
+    .ring .ring-label {
+      position: absolute;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--sky-6);
+    }
+
+    .section-title-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .section-title-row .side-note {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .chart-panel {
+      position: relative;
+      border-radius: 20px;
+      padding: 14px;
+      border: 1px solid rgba(91,120,150,0.1);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.74), rgba(241,248,255,0.76));
+    }
+
+    .chart-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    canvas {
+      width: 100%;
+      background: transparent;
+      border-radius: 18px;
+      display: block;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 2px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .mini-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .mini-kpi {
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255,255,255,0.8);
+      border: 1px solid rgba(91,120,150,0.1);
+    }
+
+    .mini-kpi .k {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .mini-kpi .v {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--sky-6);
+    }
+
+    .summary-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(91,120,150,0.1);
+    }
+
+    .summary-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .template-list, .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 560px;
+      overflow: auto;
+    }
+
+    .template-item, .history-item {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(91,120,150,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .history-item.active {
+      background:
+        linear-gradient(135deg, rgba(125,211,252,0.2), rgba(255,255,255,0.92));
+      border-color: rgba(25,118,210,0.2);
+    }
+
+    .empty {
+      padding: 22px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed rgba(91,120,150,0.22);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.52);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 14px;
+      color: var(--text);
+      background: rgba(255,255,255,0.94);
+      outline: none;
+      transition: 0.18s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(25,118,210,0.26);
+      box-shadow: 0 0 0 4px rgba(125,211,252,0.16);
+    }
+
+    textarea {
+      min-height: 94px;
+      resize: vertical;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+    }
+
+    .col-3 { grid-column: span 3; }
+    .col-4 { grid-column: span 4; }
+    .col-5 { grid-column: span 5; }
+    .col-6 { grid-column: span 6; }
+    .col-8 { grid-column: span 8; }
+    .col-12 { grid-column: span 12; }
+
+    .btn {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.22s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--sky-4), var(--sky-5));
+      color: white;
+      box-shadow: 0 12px 24px rgba(25,118,210,0.2);
+    }
+
+    .btn-soft {
+      background: rgba(25,118,210,0.08);
+      color: var(--sky-6);
+    }
+
+    .btn-danger {
+      background: rgba(239,68,68,0.12);
+      color: var(--red);
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 720px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .task-item {
+      border: 1px solid rgba(91,120,150,0.1);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.86);
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+      box-shadow: 0 6px 16px rgba(17,66,117,0.04);
+    }
+
+    .task-main {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      flex: 1;
+    }
+
+    .task-main input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--sky-5);
+      flex-shrink: 0;
+    }
+
+    .task-title {
+      font-weight: 800;
+      margin-bottom: 6px;
+      line-height: 1.45;
+    }
+
+    .task-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .pill {
+      font-size: 12px;
+      padding: 6px 9px;
+      border-radius: var(--radius-pill);
+      background: rgba(125,211,252,0.16);
+      color: var(--sky-6);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(125,211,252,0.14);
+    }
+
+    .pill.priority-high {
+      background: rgba(239,68,68,0.1);
+      color: #c53030;
+    }
+
+    .pill.priority-mid {
+      background: rgba(245,158,11,0.12);
+      color: #b76b00;
+    }
+
+    .pill.priority-low {
+      background: rgba(34,197,94,0.1);
+      color: #157a3c;
+    }
+
+    .weekday-pick {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .weekday-pick .pill {
+      background: rgba(255,255,255,0.94);
+      border: 1px solid rgba(91,120,150,0.12);
+      cursor: pointer;
+    }
+
+    .weekday-pick input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+      accent-color: var(--sky-5);
+    }
+
+    .done .task-title {
+      text-decoration: line-through;
+      opacity: 0.68;
+    }
+
+    .done {
+      opacity: 0.88;
+    }
+
+    .side-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 138px;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .tiny {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .soft-divider {
+      height: 1px;
+      background: linear-gradient(90deg, rgba(91,120,150,0), rgba(91,120,150,0.16), rgba(91,120,150,0));
+      margin: 14px 0;
+    }
+
+    @media (max-width: 1160px) {
+      .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .row { grid-template-columns: 1fr; }
+      .col-3, .col-4, .col-5, .col-6, .col-8, .col-12 { grid-column: span 1; }
+      .topbar { flex-direction: column; }
+      .today-box { width: 100%; }
+      .mini-kpis { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="hero">
+        <h1>SkyFlow - Quản lý công việc cá nhân</h1>
+        <p>
+          Theo dõi công việc hằng ngày, tự sinh task cố định theo từng thứ trong tuần,
+          xem hiệu suất theo ngày/tuần/tháng và nhận thông báo trước 30 phút khi task bắt đầu.
+        </p>
+      </div>
+
+      <div class="today-box">
+        <div class="label">Hôm nay</div>
+        <div class="value" id="todayLabel">--/--/----</div>
+        <div class="sub" id="todayWeekdayLabel">--</div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="tab-btn active" data-tab="overview">Tổng quan</button>
+      <button class="tab-btn" data-tab="daily">Chi tiết ngày</button>
+      <button class="tab-btn" data-tab="templates">Data cố định</button>
+      <button class="tab-btn" data-tab="reminders">Nhắc việc</button>
+    </div>
+
+    <section class="page active" id="overview">
+      <div class="grid grid-4" style="margin-bottom:18px;">
+        <div class="card stat-card">
+          <div class="stat-top">
+            <div>
+              <div class="stat-label">Hoàn thành hôm nay</div>
+              <div class="stat-value" id="statTodayDone">0</div>
+              <div class="badge success" id="statTodayRate">0%</div>
+            </div>
+            <div class="ring" id="ringToday"></div>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-top">
+            <div>
+              <div class="stat-label">Hoàn thành tuần này</div>
+              <div class="stat-value" id="statWeekDone">0</div>
+              <div class="badge" id="statWeekRate">0%</div>
+            </div>
+            <div class="ring" id="ringWeek"></div>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-top">
+            <div>
+              <div class="stat-label">Hoàn thành tháng này</div>
+              <div class="stat-value" id="statMonthDone">0</div>
+              <div class="badge warn" id="statMonthRate">0%</div>
+            </div>
+            <div class="ring" id="ringMonth"></div>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-top">
+            <div>
+              <div class="stat-label">Tổng việc đã lưu</div>
+              <div class="stat-value" id="statAllTasks">0</div>
+              <div class="badge">Toàn bộ dữ liệu</div>
+            </div>
+            <div class="ring" id="ringAll"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="card">
+          <div class="section-title-row">
+            <div>
+              <h3>Hiệu suất 7 ngày gần nhất</h3>
+              <div class="subtle">Biểu đồ cột cho số việc hoàn thành và đường tỷ lệ hoàn thành.</div>
+            </div>
+          </div>
+
+          <div class="chart-panel">
+            <div class="chart-wrap">
+              <canvas id="weeklyChart" height="280"></canvas>
+              <div class="chart-legend">
+                <div class="legend-item"><span class="legend-dot" style="background: rgba(25,118,210,0.72)"></span> Việc hoàn thành</div>
+                <div class="legend-item"><span class="legend-dot" style="background: rgba(245,158,11,0.95)"></span> Tỷ lệ hoàn thành</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mini-kpis">
+            <div class="mini-kpi">
+              <div class="k">Tổng việc 7 ngày</div>
+              <div class="v" id="miniWeekTotal">0</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="k">Đã xong 7 ngày</div>
+              <div class="v" id="miniWeekDone">0</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="k">Trung bình/ngày</div>
+              <div class="v" id="miniWeekAvg">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Tóm tắt nhanh hôm nay</h3>
+          <div class="subtle" style="margin-bottom:14px;">Dựa trên dữ liệu task của ngày hiện tại.</div>
+          <div id="todaySummary" class="summary-grid"></div>
+        </div>
+
+        <div class="card">
+          <h3>Ngày làm việc gần đây</h3>
+          <div class="subtle" style="margin-bottom:14px;">Bấm vào một ngày ở trang Chi tiết ngày để xem toàn bộ công việc.</div>
+          <div class="history-list" id="recentHistory"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-2" style="margin-top:18px;">
+        <div class="card">
+          <div class="section-title-row">
+            <div>
+              <h3>Xu hướng 6 tháng gần nhất</h3>
+              <div class="subtle">Theo dõi số việc hoàn thành và tỷ lệ hoàn thành theo tháng.</div>
+            </div>
+          </div>
+
+          <div class="chart-panel">
+            <div class="chart-wrap">
+              <canvas id="monthlyChart" height="280"></canvas>
+              <div class="chart-legend">
+                <div class="legend-item"><span class="legend-dot" style="background: rgba(56,189,248,0.85)"></span> Việc hoàn thành</div>
+                <div class="legend-item"><span class="legend-dot" style="background: rgba(139,92,246,0.95)"></span> Tỷ lệ hoàn thành</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Phân bổ công việc hôm nay</h3>
+          <div class="subtle" style="margin-bottom:14px;">Visual vòng tròn nhỏ giúp bạn nhìn nhanh tình hình xử lý trong ngày.</div>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <div>
+                <strong>Tỷ lệ hoàn thành hôm nay</strong>
+                <div class="subtle">Tiến độ tổng thể của các task hôm nay.</div>
+              </div>
+              <div class="ring" id="ringTodayDetail"></div>
+            </div>
+
+            <div class="summary-item">
+              <div>
+                <strong>Task ưu tiên cao</strong>
+                <div class="subtle">Tổng số task ưu tiên cao trong ngày hiện tại.</div>
+              </div>
+              <div class="badge" id="todayHighPriorityCount">0</div>
+            </div>
+
+            <div class="summary-item">
+              <div>
+                <strong>Task cố định / linh động</strong>
+                <div class="subtle">Phân bổ loại công việc trong ngày.</div>
+              </div>
+              <div class="badge" id="todayFixedDynamic">0 / 0</div>
+            </div>
+
+            <div class="summary-item">
+              <div>
+                <strong>Task chưa đặt giờ</strong>
+                <div class="subtle">Những task chưa có thời điểm bắt đầu cụ thể.</div>
+              </div>
+              <div class="badge warn" id="todayNoTimeCount">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="daily">
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="controls">
+            <div style="min-width:220px; flex:1;">
+              <label class="subtle">Chọn ngày để xem / nhập việc</label>
+              <input type="date" id="selectedDate" />
+            </div>
+            <div>
+              <label class="subtle">&nbsp;</label>
+              <button class="btn btn-soft" id="goTodayBtn">Về hôm nay</button>
+            </div>
+            <div>
+              <label class="subtle">&nbsp;</label>
+              <button class="btn btn-soft" id="cloneTemplateBtn">Sinh lại việc cố định</button>
+            </div>
+          </div>
+
+          <div class="soft-divider"></div>
+
+          <h3>Thêm việc linh động trong ngày</h3>
+          <div class="row" style="margin-top:12px;">
+            <div class="col-5"><input id="taskTitle" placeholder="Tên công việc" /></div>
+            <div class="col-3">
+              <select id="taskPriority">
+                <option value="Cao">Ưu tiên cao</option>
+                <option value="Trung bình">Ưu tiên trung bình</option>
+                <option value="Thấp">Ưu tiên thấp</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <input id="taskStartTime" type="time" />
+            </div>
+            <div class="col-12">
+              <select id="taskType">
+                <option value="Linh động">Việc linh động</option>
+                <option value="Phát sinh">Việc phát sinh</option>
+                <option value="Quan trọng">Việc quan trọng</option>
+              </select>
+            </div>
+            <div class="col-12"><textarea id="taskNote" placeholder="Ghi chú thêm cho công việc..."></textarea></div>
+            <div class="col-12"><button class="btn btn-primary" id="addTaskBtn">Thêm công việc</button></div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin:20px 0 12px; gap:12px; flex-wrap:wrap;">
+            <div>
+              <h3 style="margin:0;">Danh sách việc trong ngày</h3>
+              <div class="subtle">Bao gồm việc cố định tự sinh và việc bạn thêm thủ công.</div>
+            </div>
+            <div class="badge" id="dailyCounter">0 / 0 hoàn thành</div>
+          </div>
+
+          <div class="task-list" id="taskList"></div>
+        </div>
+
+        <div class="card">
+          <h3>Lịch sử các ngày đã có dữ liệu</h3>
+          <div class="subtle" style="margin-bottom:14px;">Bạn có thể mở lại các ngày cũ để xem chi tiết công việc đã làm.</div>
+          <div class="history-list" id="historyList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="templates">
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Thiết lập data cố định theo thứ trong tuần</h3>
+          <div class="subtle" style="margin-bottom:14px;">
+            Mỗi công việc cố định có thể áp dụng cho một hoặc nhiều thứ trong tuần.
+          </div>
+
+          <div class="row">
+            <div class="col-5"><input id="templateTitle" placeholder="Ví dụ: Họp đầu tuần" /></div>
+            <div class="col-3"><input id="templateStartTime" type="time" /></div>
+            <div class="col-4">
+              <select id="templatePriority">
+                <option value="Cao">Ưu tiên cao</option>
+                <option value="Trung bình">Ưu tiên trung bình</option>
+                <option value="Thấp">Ưu tiên thấp</option>
+              </select>
+            </div>
+
+            <div class="col-12">
+              <div class="subtle" style="margin-bottom:8px;">Áp dụng cho các ngày trong tuần</div>
+              <div class="weekday-pick">
+                <label class="pill"><input type="checkbox" value="1" class="templateWeekday" /> Thứ 2</label>
+                <label class="pill"><input type="checkbox" value="2" class="templateWeekday" /> Thứ 3</label>
+                <label class="pill"><input type="checkbox" value="3" class="templateWeekday" /> Thứ 4</label>
+                <label class="pill"><input type="checkbox" value="4" class="templateWeekday" /> Thứ 5</label>
+                <label class="pill"><input type="checkbox" value="5" class="templateWeekday" /> Thứ 6</label>
+                <label class="pill"><input type="checkbox" value="6" class="templateWeekday" /> Thứ 7</label>
+                <label class="pill"><input type="checkbox" value="0" class="templateWeekday" /> Chủ nhật</label>
+              </div>
+            </div>
+
+            <div class="col-12"><textarea id="templateNote" placeholder="Mô tả hoặc ghi chú cho đầu việc cố định..."></textarea></div>
+            <div class="col-12"><button class="btn btn-primary" id="addTemplateBtn">Thêm đầu việc cố định</button></div>
+          </div>
+
+          <div style="margin-top:18px;" class="subtle">
+            Ví dụ: “Họp đầu tuần” cho Thứ 2, “Báo cáo tuần” cho Thứ 6, “Kiểm tra email” áp dụng từ Thứ 2 đến Thứ 7.
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Danh sách đầu việc cố định</h3>
+          <div class="subtle" style="margin-bottom:14px;">
+            Ngày cũ sẽ giữ dữ liệu cũ. Thay đổi ở đây chỉ ảnh hưởng tới ngày mới hoặc khi bạn bấm “Sinh lại việc cố định”.
+          </div>
+          <div class="template-list" id="templateList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="reminders">
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Cài đặt nhắc việc trước 30 phút</h3>
+          <div class="subtle" style="margin-bottom:14px;">
+            Trình duyệt cần đang mở và bạn cần cấp quyền thông báo. Mỗi task có thể đặt giờ bắt đầu riêng.
+          </div>
+
+          <div class="row">
+            <div class="col-12">
+              <button class="btn btn-primary" id="enableNotificationBtn">Bật quyền thông báo</button>
+            </div>
+            <div class="col-12">
+              <div class="summary-item">
+                <div>
+                  <strong>Trạng thái quyền thông báo</strong>
+                  <div class="subtle">Cho phép để nhận popup nhắc việc trên máy khi tới giờ.</div>
+                </div>
+                <div class="badge" id="notificationStatus">Chưa kiểm tra</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Nguyên tắc hoạt động</h3>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <div>
+                <strong>1. Gán giờ bắt đầu cho từng task</strong>
+                <div class="subtle">Bạn có thể nhập giờ ngay lúc tạo hoặc sửa trực tiếp trên task.</div>
+              </div>
+            </div>
+            <div class="summary-item">
+              <div>
+                <strong>2. Tự nhắc trước 30 phút</strong>
+                <div class="subtle">Ví dụ task 09:00 thì 08:30 sẽ hiện thông báo.</div>
+              </div>
+            </div>
+            <div class="summary-item">
+              <div>
+                <strong>3. Không nhắc lặp cùng một task</strong>
+                <div class="subtle">Mỗi task chỉ nhắc một lần trong đúng ngày đó.</div>
+              </div>
+            </div>
+            <div class="summary-item">
+              <div>
+                <strong>4. Cần mở trình duyệt</strong>
+                <div class="subtle">Nếu đóng trình duyệt hoặc máy sleep thì cơ chế local này sẽ không chạy.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      Dữ liệu được lưu bằng LocalStorage trên máy của bạn. Khi đóng trình duyệt rồi mở lại vẫn còn dữ liệu cũ.
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "skyflow_local_tasks_v3";
+
+    const defaultTemplates = [
+      {
+        id: uid(),
+        title: "Họp và rà soát kế hoạch đầu tuần",
+        priority: "Cao",
+        note: "Xem lại các đầu việc chính cần làm trong tuần.",
+        type: "Cố định",
+        startTime: "08:30",
+        weekdays: [1]
+      },
+      {
+        id: uid(),
+        title: "Kiểm tra email và tin nhắn đầu ngày",
+        priority: "Cao",
+        note: "Rà soát toàn bộ email, tin nhắn và việc tồn.",
+        type: "Cố định",
+        startTime: "08:00",
+        weekdays: [1, 2, 3, 4, 5, 6]
+      },
+      {
+        id: uid(),
+        title: "Cập nhật tiến độ công việc đang thực hiện",
+        priority: "Trung bình",
+        note: "Đánh dấu phần đã hoàn thành và phần còn tồn.",
+        type: "Cố định",
+        startTime: "13:30",
+        weekdays: [1, 2, 3, 4, 5]
+      },
+      {
+        id: uid(),
+        title: "Tổng hợp báo cáo cuối tuần",
+        priority: "Cao",
+        note: "Rà soát kết quả trong tuần và chuẩn bị báo cáo.",
+        type: "Cố định",
+        startTime: "16:30",
+        weekdays: [5]
+      },
+      {
+        id: uid(),
+        title: "Rà soát công việc cá nhân cuối ngày",
+        priority: "Trung bình",
+        note: "Ghi chú việc đã hoàn thành và việc còn tồn.",
+        type: "Cố định",
+        startTime: "17:00",
+        weekdays: [1, 2, 3, 4, 5, 6]
+      }
+    ];
+
+    let state = loadState();
+    const today = formatDateInput(new Date());
+    let currentDate = today;
+
+    const el = (id) => document.getElementById(id);
+
+    init();
+
+    function init() {
+      migrateOldData();
+      ensureDayExists(today);
+      el("todayLabel").textContent = formatDateDisplay(today);
+      el("todayWeekdayLabel").textContent = getWeekdayLabel(getWeekdayNumber(today));
+      el("selectedDate").value = today;
+
+      bindTabs();
+      bindEvents();
+      updateNotificationStatus();
+      startReminderWatcher();
+      renderAll();
+    }
+
+    function bindTabs() {
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+          btn.classList.add("active");
+          el(btn.dataset.tab).classList.add("active");
+        });
+      });
+    }
+
+    function bindEvents() {
+      el("addTemplateBtn").addEventListener("click", addTemplate);
+      el("addTaskBtn").addEventListener("click", addTask);
+      el("enableNotificationBtn").addEventListener("click", requestNotificationPermission);
+
+      el("selectedDate").addEventListener("change", (e) => {
+        currentDate = e.target.value;
+        ensureDayExists(currentDate);
+        renderDailyPage();
+      });
+
+      el("goTodayBtn").addEventListener("click", () => {
+        currentDate = today;
+        el("selectedDate").value = today;
+        ensureDayExists(today);
+        renderDailyPage();
+      });
+
+      el("cloneTemplateBtn").addEventListener("click", () => {
+        regenerateTemplatesForDate(currentDate);
+      });
+    }
+
+    function getPriorityClass(priority) {
+      if (priority === "Cao") return "priority-high";
+      if (priority === "Trung bình") return "priority-mid";
+      return "priority-low";
+    }
+
+    function getWeekdayNumber(dateStr) {
+      return new Date(dateStr + "T00:00:00").getDay();
+    }
+
+    function getWeekdayLabel(dayNumber) {
+      const labels = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
+      return labels[dayNumber] || "";
+    }
+
+    function getSelectedTemplateWeekdays() {
+      return Array.from(document.querySelectorAll(".templateWeekday:checked"))
+        .map(input => Number(input.value))
+        .sort((a, b) => a - b);
+    }
+
+    function clearTemplateWeekdaySelection() {
+      document.querySelectorAll(".templateWeekday").forEach(input => {
+        input.checked = false;
+      });
+    }
+
+    function formatWeekdays(weekdays = []) {
+      if (!weekdays.length) return "Chưa chọn ngày";
+      return weekdays.map(getWeekdayLabel).join(", ");
+    }
+
+    function getTemplatesForDate(dateStr) {
+      const weekday = getWeekdayNumber(dateStr);
+      return (state.templates || []).filter(t => {
+        if (!Array.isArray(t.weekdays) || !t.weekdays.length) return true;
+        return t.weekdays.includes(weekday);
+      });
+    }
+
+    function migrateOldData() {
+      let changed = false;
+
+      state.templates = (state.templates || []).map(t => {
+        const updated = { ...t };
+
+        if (typeof updated.startTime === "undefined") {
+          updated.startTime = "";
+          changed = true;
+        }
+
+        if (!Array.isArray(updated.weekdays)) {
+          updated.weekdays = [0, 1, 2, 3, 4, 5, 6];
+          changed = true;
+        }
+
+        return updated;
+      });
+
+      Object.keys(state.days || {}).forEach(dateStr => {
+        state.days[dateStr].tasks = (state.days[dateStr].tasks || []).map(task => {
+          const updated = { ...task };
+
+          if (typeof updated.startTime === "undefined") {
+            updated.startTime = "";
+            changed = true;
+          }
+
+          if (!Array.isArray(updated.weekdays)) {
+            updated.weekdays = [];
+            changed = true;
+          }
+
+          return updated;
+        });
+      });
+
+      if (changed) saveState();
+    }
+
+    function addTemplate() {
+      const title = el("templateTitle").value.trim();
+      const priority = el("templatePriority").value;
+      const note = el("templateNote").value.trim();
+      const startTime = el("templateStartTime").value;
+      const weekdays = getSelectedTemplateWeekdays();
+
+      if (!title) return alert("Vui lòng nhập tên đầu việc cố định.");
+      if (!weekdays.length) return alert("Vui lòng chọn ít nhất 1 ngày trong tuần.");
+
+      state.templates.push({
+        id: uid(),
+        title,
+        priority,
+        note,
+        type: "Cố định",
+        startTime,
+        weekdays
+      });
+
+      saveState();
+      el("templateTitle").value = "";
+      el("templateStartTime").value = "";
+      el("templateNote").value = "";
+      clearTemplateWeekdaySelection();
+      renderAll();
+    }
+
+    function addTask() {
+      const title = el("taskTitle").value.trim();
+      const priority = el("taskPriority").value;
+      const startTime = el("taskStartTime").value;
+      const type = el("taskType").value;
+      const note = el("taskNote").value.trim();
+
+      if (!title) return alert("Vui lòng nhập tên công việc.");
+
+      ensureDayExists(currentDate);
+      state.days[currentDate].tasks.push({
+        id: uid(),
+        title,
+        priority,
+        note,
+        type,
+        startTime,
+        weekdays: [],
+        fixed: false,
+        completed: false,
+        createdAt: new Date().toISOString()
+      });
+
+      saveState();
+      el("taskTitle").value = "";
+      el("taskStartTime").value = "";
+      el("taskNote").value = "";
+      renderAll();
+    }
+
+    function removeTemplate(id) {
+      state.templates = state.templates.filter(t => t.id !== id);
+      saveState();
+      renderAll();
+    }
+
+    function ensureDayExists(dateStr) {
+      if (!dateStr) return;
+
+      if (!state.days[dateStr]) {
+        state.days[dateStr] = {
+          createdAt: new Date().toISOString(),
+          tasks: getTemplatesForDate(dateStr).map(t => ({
+            id: uid(),
+            templateId: t.id,
+            title: t.title,
+            priority: t.priority,
+            note: t.note,
+            type: t.type || "Cố định",
+            startTime: t.startTime || "",
+            weekdays: Array.isArray(t.weekdays) ? [...t.weekdays] : [],
+            fixed: true,
+            completed: false,
+            createdAt: new Date().toISOString()
+          }))
+        };
+        saveState();
+      }
+    }
+
+    function regenerateTemplatesForDate(dateStr) {
+      if (!dateStr) return;
+      ensureDayExists(dateStr);
+
+      const flexibleTasks = state.days[dateStr].tasks.filter(t => !t.fixed);
+
+      state.days[dateStr].tasks = [
+        ...getTemplatesForDate(dateStr).map(t => ({
+          id: uid(),
+          templateId: t.id,
+          title: t.title,
+          priority: t.priority,
+          note: t.note,
+          type: t.type || "Cố định",
+          startTime: t.startTime || "",
+          weekdays: Array.isArray(t.weekdays) ? [...t.weekdays] : [],
+          fixed: true,
+          completed: false,
+          createdAt: new Date().toISOString()
+        })),
+        ...flexibleTasks
+      ];
+
+      saveState();
+      renderAll();
+    }
+
+    function toggleTask(dateStr, id) {
+      const task = state.days[dateStr]?.tasks?.find(t => t.id === id);
+      if (!task) return;
+      task.completed = !task.completed;
+      task.completedAt = task.completed ? new Date().toISOString() : null;
+      saveState();
+      renderAll();
+    }
+
+    function deleteTask(dateStr, id) {
+      state.days[dateStr].tasks = state.days[dateStr].tasks.filter(t => t.id !== id);
+      saveState();
+      renderAll();
+    }
+
+    function updateTaskStartTime(dateStr, id, value) {
+      const task = state.days[dateStr]?.tasks?.find(t => t.id === id);
+      if (!task) return;
+      task.startTime = value;
+      saveState();
+      renderAll();
+    }
+
+    function getDayStats(date) {
+      const tasks = state.days[date]?.tasks || [];
+      const total = tasks.length;
+      const done = tasks.filter(t => t.completed).length;
+      const rate = total ? Math.round((done / total) * 100) : 0;
+      return { total, done, rate };
+    }
+
+    function getRangeStats(dates) {
+      let total = 0;
+      let done = 0;
+      dates.forEach(date => {
+        const s = getDayStats(date);
+        total += s.total;
+        done += s.done;
+      });
+      return { total, done, rate: total ? Math.round((done / total) * 100) : 0 };
+    }
+
+    function getAllStats() {
+      let total = 0;
+      let done = 0;
+      Object.keys(state.days).forEach(date => {
+        const s = getDayStats(date);
+        total += s.total;
+        done += s.done;
+      });
+      return { total, done };
+    }
+
+    function renderAll() {
+      ensureDayExists(currentDate);
+      renderOverview();
+      renderDailyPage();
+      renderTemplates();
+      updateNotificationStatus();
+    }
+
+    function renderOverview() {
+      const todayStats = getDayStats(today);
+      const weekDates = getLastNDates(7);
+      const weekStats = getRangeStats(weekDates);
+      const monthDates = getDatesInMonth(today.slice(0, 7));
+      const monthStats = getRangeStats(monthDates);
+      const allStats = getAllStats();
+      const weekAvg = weekDates.length ? Math.round((weekStats.done / weekDates.length) * 10) / 10 : 0;
+
+      el("statTodayDone").textContent = todayStats.done;
+      el("statTodayRate").textContent = `${todayStats.rate}%`;
+      el("statWeekDone").textContent = weekStats.done;
+      el("statWeekRate").textContent = `${weekStats.rate}% hoàn thành`;
+      el("statMonthDone").textContent = monthStats.done;
+      el("statMonthRate").textContent = `${monthStats.rate}% hoàn thành`;
+      el("statAllTasks").textContent = allStats.total;
+
+      el("miniWeekTotal").textContent = weekStats.total;
+      el("miniWeekDone").textContent = weekStats.done;
+      el("miniWeekAvg").textContent = weekAvg;
+
+      drawRing("ringToday", todayStats.rate, "#1976d2");
+      drawRing("ringWeek", weekStats.rate, "#38bdf8");
+      drawRing("ringMonth", monthStats.rate, "#f59e0b");
+      drawRing("ringAll", allStats.total ? Math.min(100, Math.round((allStats.done / allStats.total) * 100)) : 0, "#8b5cf6");
+
+      renderTodaySummary(todayStats);
+      renderRecentHistory();
+      drawWeeklyChart();
+      drawMonthlyChart();
+
+      const tasks = state.days[today]?.tasks || [];
+      const important = tasks.filter(t => t.priority === "Cao").length;
+      const fixed = tasks.filter(t => t.fixed).length;
+      const dynamic = tasks.filter(t => !t.fixed).length;
+      const noTime = tasks.filter(t => !t.startTime).length;
+
+      el("todayHighPriorityCount").textContent = important;
+      el("todayFixedDynamic").textContent = `${fixed} / ${dynamic}`;
+      el("todayNoTimeCount").textContent = noTime;
+      drawRing("ringTodayDetail", todayStats.rate, "#0f4c81");
+    }
+
+    function renderTodaySummary(stats) {
+      const tasks = state.days[today]?.tasks || [];
+      const important = tasks.filter(t => t.priority === "Cao").length;
+      const fixed = tasks.filter(t => t.fixed).length;
+      const dynamic = tasks.filter(t => !t.fixed).length;
+
+      el("todaySummary").innerHTML = `
+        <div class="summary-item">
+          <div>
+            <strong>Tổng số việc hôm nay</strong>
+            <div class="subtle">Bao gồm việc cố định và việc phát sinh.</div>
+          </div>
+          <div class="badge">${stats.total}</div>
+        </div>
+
+        <div class="summary-item">
+          <div>
+            <strong>Đã hoàn thành</strong>
+            <div class="subtle">Số việc bạn đã đánh dấu xong trong ngày.</div>
+          </div>
+          <div class="badge success">${stats.done}</div>
+        </div>
+
+        <div class="summary-item">
+          <div>
+            <strong>Việc ưu tiên cao</strong>
+            <div class="subtle">Những việc cần chú ý và xử lý trước.</div>
+          </div>
+          <div class="badge warn">${important}</div>
+        </div>
+
+        <div class="summary-item">
+          <div>
+            <strong>Việc cố định / linh động</strong>
+            <div class="subtle">Phân bổ loại công việc hiện có trong ngày.</div>
+          </div>
+          <div class="badge">${fixed} / ${dynamic}</div>
+        </div>
+      `;
+    }
+
+    function renderRecentHistory() {
+      const entries = Object.keys(state.days)
+        .sort((a, b) => b.localeCompare(a))
+        .slice(0, 10)
+        .map(date => {
+          const s = getDayStats(date);
+          return `
+            <div class="history-item">
+              <div>
+                <strong>${formatDateDisplay(date)}</strong>
+                <div class="subtle">${s.done}/${s.total} việc hoàn thành</div>
+              </div>
+              <div class="badge">${s.rate}%</div>
+            </div>
+          `;
+        }).join("");
+
+      el("recentHistory").innerHTML = entries || `<div class="empty">Chưa có dữ liệu lịch sử.</div>`;
+    }
+
+    function renderDailyPage() {
+      ensureDayExists(currentDate);
+      const tasks = state.days[currentDate]?.tasks || [];
+      const stats = getDayStats(currentDate);
+
+      el("dailyCounter").textContent = `${stats.done} / ${stats.total} hoàn thành`;
+
+      if (!tasks.length) {
+        el("taskList").innerHTML = `<div class="empty">Chưa có công việc nào trong ngày này.</div>`;
+      } else {
+        el("taskList").innerHTML = tasks.map(task => `
+          <div class="task-item ${task.completed ? "done" : ""}">
+            <div class="task-main">
+              <input type="checkbox" ${task.completed ? "checked" : ""} onchange="toggleTask('${currentDate}','${task.id}')" />
+              <div>
+                <div class="task-title">${escapeHtml(task.title)}</div>
+                <div class="subtle">${escapeHtml(task.note || "Không có ghi chú")}</div>
+                <div class="task-meta">
+                  <span class="pill">${task.fixed ? "Cố định" : "Linh động"}</span>
+                  <span class="pill">${task.startTime ? "Bắt đầu " + escapeHtml(task.startTime) : "Chưa đặt giờ"}</span>
+                  <span class="pill ${getPriorityClass(task.priority)}">${escapeHtml(task.priority)}</span>
+                  <span class="pill">${escapeHtml(task.type || "Khác")}</span>
+                  ${task.fixed && task.weekdays?.length ? `<span class="pill">${escapeHtml(formatWeekdays(task.weekdays))}</span>` : ""}
+                </div>
+              </div>
+            </div>
+
+            <div class="side-stack">
+              <input type="time" value="${task.startTime || ""}" onchange="updateTaskStartTime('${currentDate}','${task.id}', this.value)" />
+              <button class="btn btn-danger" onclick="deleteTask('${currentDate}','${task.id}')">Xóa</button>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      const dates = Object.keys(state.days).sort((a, b) => b.localeCompare(a));
+      el("historyList").innerHTML = dates.map(date => {
+        const s = getDayStats(date);
+        return `
+          <div class="history-item ${date === currentDate ? "active" : ""}">
+            <div>
+              <strong>${formatDateDisplay(date)}</strong>
+              <div class="subtle">${s.done}/${s.total} việc - ${s.rate}% hoàn thành</div>
+            </div>
+            <button class="btn btn-soft" onclick="openDate('${date}')">Xem</button>
+          </div>
+        `;
+      }).join("") || `<div class="empty">Chưa có lịch sử.</div>`;
+    }
+
+    function renderTemplates() {
+      const list = state.templates || [];
+      if (!list.length) {
+        el("templateList").innerHTML = `<div class="empty">Chưa có đầu việc cố định nào.</div>`;
+        return;
+      }
+
+      el("templateList").innerHTML = list.map(item => `
+        <div class="template-item">
+          <div>
+            <strong>${escapeHtml(item.title)}</strong>
+            <div class="subtle">${escapeHtml(item.note || "Không có ghi chú")}</div>
+            <div class="task-meta" style="margin-top:8px;">
+              <span class="pill ${getPriorityClass(item.priority)}">${escapeHtml(item.priority)}</span>
+              <span class="pill">${item.startTime ? "Bắt đầu " + escapeHtml(item.startTime) : "Chưa đặt giờ"}</span>
+              <span class="pill">${escapeHtml(formatWeekdays(item.weekdays))}</span>
+              <span class="pill">Cố định</span>
+            </div>
+          </div>
+          <button class="btn btn-danger" onclick="removeTemplate('${item.id}')">Xóa</button>
+        </div>
+      `).join("");
+    }
+
+    function openDate(date) {
+      currentDate = date;
+      el("selectedDate").value = date;
+      document.querySelector('[data-tab="daily"]').click();
+      renderDailyPage();
+    }
+
+    function drawRing(containerId, percent, color) {
+      const clamped = Math.max(0, Math.min(100, Number(percent) || 0));
+      const radius = 26;
+      const circumference = 2 * Math.PI * radius;
+      const progress = circumference - (clamped / 100) * circumference;
+
+      el(containerId).innerHTML = `
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="${radius}" stroke="rgba(100,128,157,0.14)" stroke-width="6" fill="none"></circle>
+          <circle cx="32" cy="32" r="${radius}" stroke="${color}" stroke-width="6" fill="none"
+            stroke-linecap="round"
+            stroke-dasharray="${circumference}"
+            stroke-dashoffset="${progress}"></circle>
+        </svg>
+        <div class="ring-label">${clamped}%</div>
+      `;
+    }
+
+    function drawWeeklyChart() {
+      const canvas = el("weeklyChart");
+      const ctx = canvas.getContext("2d");
+      const dates = getLastNDates(7);
+      const series = dates.map(date => ({ date, ...getDayStats(date) }));
+
+      drawMixedChart(ctx, canvas, series, {
+        xFormatter: item => shortDate(item.date),
+        barValue: item => item.done,
+        lineValue: item => item.rate,
+        maxBar: Math.max(1, ...series.map(i => i.total || i.done || 0)),
+        barColor: "rgba(25,118,210,0.72)",
+        lineColor: "rgba(245,158,11,0.95)",
+        pointColor: "rgba(245,158,11,1)"
+      });
+    }
+
+    function drawMonthlyChart() {
+      const canvas = el("monthlyChart");
+      const ctx = canvas.getContext("2d");
+      const months = getLastNMonths(6);
+      const series = months.map(month => {
+        const stats = getRangeStats(getDatesInMonth(month));
+        return { month, ...stats };
+      });
+
+      drawMixedChart(ctx, canvas, series, {
+        xFormatter: item => item.month,
+        barValue: item => item.done,
+        lineValue: item => item.rate,
+        maxBar: Math.max(1, ...series.map(i => i.total || i.done || 0)),
+        barColor: "rgba(56,189,248,0.85)",
+        lineColor: "rgba(139,92,246,0.95)",
+        pointColor: "rgba(139,92,246,1)"
+      });
+    }
+
+    function drawMixedChart(ctx, canvas, data, options) {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const cssWidth = rect.width || canvas.parentElement.clientWidth || 600;
+      const cssHeight = Number(canvas.getAttribute("height")) || 280;
+
+      canvas.width = cssWidth * dpr;
+      canvas.height = cssHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const width = cssWidth;
+      const height = cssHeight;
+      ctx.clearRect(0, 0, width, height);
+
+      const pad = { top: 24, right: 22, bottom: 52, left: 42 };
+      const chartW = width - pad.left - pad.right;
+      const chartH = height - pad.top - pad.bottom;
+
+      const gridCount = 4;
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(100,128,157,0.12)";
+      for (let i = 0; i <= gridCount; i++) {
+        const y = pad.top + (chartH / gridCount) * i;
+        ctx.beginPath();
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(width - pad.right, y);
+        ctx.stroke();
+      }
+
+      const step = chartW / Math.max(data.length, 1);
+      const barWidth = Math.min(42, step * 0.42);
+
+      ctx.font = "12px Inter, sans-serif";
+      ctx.textAlign = "center";
+
+      data.forEach((item, i) => {
+        const x = pad.left + step * i + step / 2;
+        const barVal = options.barValue(item);
+        const barHeight = (barVal / options.maxBar) * (chartH - 8);
+        const y = pad.top + chartH - barHeight;
+
+        roundRect(ctx, x - barWidth / 2, y, barWidth, barHeight, 10, options.barColor);
+        ctx.fillStyle = "#64809d";
+        ctx.fillText(options.xFormatter(item), x, height - 18);
+
+        ctx.fillStyle = "#45647f";
+        if (barVal > 0) ctx.fillText(String(barVal), x, y - 8);
+      });
+
+      ctx.beginPath();
+      data.forEach((item, i) => {
+        const x = pad.left + step * i + step / 2;
+        const rate = options.lineValue(item);
+        const y = pad.top + chartH - (rate / 100) * (chartH - 8);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = options.lineColor;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      data.forEach((item, i) => {
+        const x = pad.left + step * i + step / 2;
+        const rate = options.lineValue(item);
+        const y = pad.top + chartH - (rate / 100) * (chartH - 8);
+
+        ctx.beginPath();
+        ctx.arc(x, y, 4.8, 0, Math.PI * 2);
+        ctx.fillStyle = options.pointColor;
+        ctx.fill();
+
+        ctx.fillStyle = "#5f6f8a";
+        ctx.fillText(rate + "%", x, y - 10);
+      });
+    }
+
+    function roundRect(ctx, x, y, w, h, r, fill) {
+      if (h < 0) return;
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          if (!parsed.templates || !parsed.days) throw new Error("invalid");
+          return parsed;
+        } catch {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
+
+      const initial = { templates: defaultTemplates, days: {} };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+      return initial;
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function uid() {
+      return "id_" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+    }
+
+    function formatDateInput(date) {
+      return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    }
+
+    function formatDateDisplay(dateStr) {
+      const d = new Date(dateStr + "T00:00:00");
+      return d.toLocaleDateString("vi-VN", {
+        weekday: "long",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
+    }
+
+    function shortDate(dateStr) {
+      const [, m, d] = dateStr.split("-");
+      return `${d}/${m}`;
+    }
+
+    function getLastNDates(n) {
+      const base = new Date(today + "T00:00:00");
+      const arr = [];
+      for (let i = n - 1; i >= 0; i--) {
+        const d = new Date(base);
+        d.setDate(base.getDate() - i);
+        arr.push(formatDateInput(d));
+      }
+      return arr;
+    }
+
+    function getDatesInMonth(yyyyMM) {
+      const [y, m] = yyyyMM.split("-").map(Number);
+      const last = new Date(y, m, 0).getDate();
+      const arr = [];
+      for (let d = 1; d <= last; d++) {
+        arr.push(`${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`);
+      }
+      return arr;
+    }
+
+    function getLastNMonths(n) {
+      const base = new Date(today + "T00:00:00");
+      const arr = [];
+      for (let i = n - 1; i >= 0; i--) {
+        const d = new Date(base.getFullYear(), base.getMonth() - i, 1);
+        arr.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+      }
+      return arr;
+    }
+
+    async function requestNotificationPermission() {
+      if (!("Notification" in window)) {
+        alert("Trình duyệt này không hỗ trợ thông báo.");
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+      updateNotificationStatus();
+
+      if (permission === "granted") {
+        showReminder("SkyFlow", "Đã bật thông báo thành công. Hệ thống sẽ nhắc trước 30 phút khi task sắp bắt đầu.");
+      }
+    }
+
+    function updateNotificationStatus() {
+      const statusEl = el("notificationStatus");
+      if (!statusEl || !("Notification" in window)) return;
+
+      const map = {
+        granted: "Đã cho phép",
+        denied: "Đã chặn",
+        default: "Chưa cấp quyền"
+      };
+
+      statusEl.textContent = map[Notification.permission] || Notification.permission;
+    }
+
+    function showReminder(title, body) {
+      if (!("Notification" in window)) return;
+      if (Notification.permission !== "granted") return;
+      new Notification(title, { body });
+    }
+
+    function getReminderLogKey(dateStr, taskId) {
+      return `reminded_${dateStr}_${taskId}`;
+    }
+
+    function shouldTriggerReminder(dateStr, task) {
+      if (!task.startTime || task.completed) return false;
+
+      const [hour, minute] = task.startTime.split(":").map(Number);
+      if (Number.isNaN(hour) || Number.isNaN(minute)) return false;
+
+      const taskDateTime = new Date(
+        `${dateStr}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00`
+      );
+
+      const reminderTime = new Date(taskDateTime.getTime() - 30 * 60 * 1000);
+      const now = new Date();
+      const diff = now.getTime() - reminderTime.getTime();
+
+      return diff >= 0 && diff < 60000;
+    }
+
+    function runReminderCheck() {
+      if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+      Object.keys(state.days).forEach(dateStr => {
+        const tasks = state.days[dateStr]?.tasks || [];
+
+        tasks.forEach(task => {
+          const reminderKey = getReminderLogKey(dateStr, task.id);
+          if (localStorage.getItem(reminderKey)) return;
+
+          if (shouldTriggerReminder(dateStr, task)) {
+            const body = `${task.title} sẽ bắt đầu lúc ${task.startTime}. Còn 30 phút để chuẩn bị.`;
+            showReminder("Nhắc việc SkyFlow", body);
+            localStorage.setItem(reminderKey, "1");
+          }
+        });
+      });
+    }
+
+    function startReminderWatcher() {
+      runReminderCheck();
+      setInterval(runReminderCheck, 30000);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    window.toggleTask = toggleTask;
+    window.deleteTask = deleteTask;
+    window.removeTemplate = removeTemplate;
+    window.openDate = openDate;
+    window.updateTaskStartTime = updateTaskStartTime;
+    window.getPriorityClass = getPriorityClass;
+
+    window.addEventListener("resize", () => {
+      renderOverview();
+    });
+  </script>
+</body>
+</html>
